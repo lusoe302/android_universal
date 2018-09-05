@@ -1,7 +1,9 @@
 Usage :
 --------------------
+copy recovery or boot file in the current directory as boot.img
+
 *** Windows :
-   "makeramdisk.cmd boot.img boot.new"
+   "makeramdisk.cmd"
 
 *** Linux :
-   "./makeramdisk.sh boot.img boot.new"
+   "./makeramdisk.sh"

@@ -6,14 +6,15 @@ BIT=$3
 disable=0
 RPATH=./root/tmp
 RAMDISK=./root/tmp/ramdisk
-PARAM=up_param
 
 #Detect Windows
 which winver >/dev/null 2>&1
 if [ $? -eq 0 ]; then
+    echo "Windows detected"
 	WINDOWS=1
 	XZ=./xz
 else
+    echo "Linux detected"
 	WINDOWS=0
 	XZ=xz
 fi
@@ -46,14 +47,6 @@ ask() {
 		[ ${__retval} -eq 1 ] && echo y || echo n
 	fi
 	eval ${__retvar}=${__retval}
-} 
-
-perform() {
-	if [ ${WINDOWS} -eq 1 ]; then
-		"$BB" "$@"
-	else
-		"$@"
-	fi
 } 
 
 perform() {
@@ -107,7 +100,7 @@ detect_android() {
 	
     if [ "${VERSION}" == "9" -o "${VERSION}" == "9.0.1" ]; then
 		SDK=27
-    if [ "${VERSION}" == "8" -o "${VERSION}" == "8.0.1" ]; then
+    elif [ "${VERSION}" == "8" -o "${VERSION}" == "8.0.1" ]; then
 		SDK=26
     elif [ "${VERSION}" == "7.1" -o "${VERSION}" == "7.1.1" ]; then
 		SDK=25
@@ -197,7 +190,6 @@ get_kernel_info() {
 unpack_kernel() {
 	ui_print "- Unpacking boot"
 	local vars=$("$BOOTIMG" unpackelf -i "$SOURCE" -k $RPATH/kernel -r $RPATH/rd.gz -d $RPATH/dtb -q)
-
 	if [ 0 -ne ${#vars} ]; then
 		ui_print "  Found elf boot image"
 		eval $vars
@@ -246,6 +238,7 @@ unpack_initfs() {
 	ui_print "- Unpacking initramfs"
 	perform rm -rf $RAMDISK
 	perform mkdir -p $RAMDISK
+    echo "gunzip -c $RPATH/rd.gz | "$BOOTIMG" unpackinitfs -d $RAMDISK"
 	perform gunzip -c $RPATH/rd.gz | "$BOOTIMG" unpackinitfs -d $RAMDISK
 }
 
@@ -280,6 +273,7 @@ patch_stuff() {
     cp root/.android/adb_keys $RAMDISK/adb_keys
     #$BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 --minimal
     $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 --magisk
+    echo $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 --magisk
     $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 "allow su * process { * }"
     $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 "allow * su process { * }"
     sed -i '/on early-init/iimport /init.shell.rc\n' $RAMDISK/init.rc@0750
@@ -324,8 +318,7 @@ if [ -z $1 ] && [ -z $2 ] && [ -z $3 ]; then
 	exit 1
 fi
  
-
-ui_print "Root ramdisk $VERSION (c) B.Kerler 2018\n"
+ui_print "\nRoot ramdisk $VERSION (c) B.Kerler 2018\n"
 # "Base system based on Tobias Waldvogel\n"
 
 #Make sure we run on bash in Linux
@@ -336,9 +329,11 @@ if [ $WINDOWS -eq 0 ]; then
 			ui_print "This script requires bash"
 			exit 1
 		fi
-		exec $BASH $@
+        echo $BASH $0 $@
+		exec $BASH $0 $@
 	fi
 fi
+
 
 if [ ! -f $1 ]; then
   ui_print "Kernel Image not found"
@@ -373,10 +368,6 @@ patch_stuff
 if [ -f boot.img.lz4 ]
 then
     rm boot.img
-fi
-if [ -f up_param.bin.lz4 ]
-then
-    rm up_param.bin
 fi
 make_bootimg
 ask "- Sign image. Y or N." 1 disable
