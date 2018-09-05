@@ -1,0 +1,7 @@
+How to install:
+---------------
+Windows:
+- Get python >=3.6 and install to c:\python36
+
+Linux:
+- Install python, lz4

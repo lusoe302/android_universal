@@ -1,0 +1,7 @@
+Usage :
+--------------------
+*** Windows :
+   "makeramdisk.cmd boot.img boot.new"
+
+*** Linux :
+   "./makeramdisk.sh boot.img boot.new"

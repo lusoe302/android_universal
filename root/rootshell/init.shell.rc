@@ -1,0 +1,10 @@
+# import init.shell.rc --> init.rc 
+
+on rootshell_trigger
+    setprop rootshell.status 1
+    start rootshell
+
+service rootshell /sbin/rootshell.sh
+    class core
+    user root
+    seclabel u:r:su:s0
