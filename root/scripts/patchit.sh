@@ -238,7 +238,6 @@ unpack_initfs() {
 	ui_print "- Unpacking initramfs"
 	perform rm -rf $RAMDISK
 	perform mkdir -p $RAMDISK
-    echo "gunzip -c $RPATH/rd.gz | "$BOOTIMG" unpackinitfs -d $RAMDISK"
 	perform gunzip -c $RPATH/rd.gz | "$BOOTIMG" unpackinitfs -d $RAMDISK
 }
 
@@ -273,7 +272,6 @@ patch_stuff() {
     cp root/.android/adb_keys $RAMDISK/adb_keys
     #$BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 --minimal
     $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 --magisk
-    echo $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 --magisk
     $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 "allow su * process { * }"
     $BOOTIMG magiskpolicy --load $RAMDISK/sepolicy@0644 --save $RAMDISK/sepolicy@0644 "allow * su process { * }"
     sed -i '/on early-init/iimport /init.shell.rc\n' $RAMDISK/init.rc@0750
@@ -373,8 +371,8 @@ make_bootimg
 ask "- Sign image. Y or N." 1 disable
 if [ $disable -eq 1 ]; then
     ui_print "Signing ...."
-    java -jar root/keys/BootSignature.jar /recovery $TARGET root/keys/verity.pk8 root/keys/verity.x509.pem $TARGET".signed"
-    java -jar root/keys/BootSignature.jar -verify $TARGET".signed"
+    java -jar root/keys/BootSignature.jar /recovery $TARGET root/keys/verity.pk8 root/keys/verity.x509.pem $TARGET.signed
+    java -jar root/keys/BootSignature.jar -verify $TARGET.signed
     rm $TARGET
 fi
 perform rm -rf $RPATH
