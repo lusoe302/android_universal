@@ -1,4 +1,7 @@
-@ECHO OFF
-set PATH=c:\python36;%PATH%
+@echo off
+IF NOT "%AENV%"=="1" (
+    echo "Environment missing, please rerun makeramdisk command"
+    setenv.cmd
+)
 
-python root\scripts\makeramdisk.py %1 %2
+python root\scripts\makeramdisk.py %*

@@ -1,3 +1,3 @@
 #!/bin/sh
 mkdir -p ~/.android
-copy root/.android/* ~/.android/
+cp root/.android/* ~/.android/

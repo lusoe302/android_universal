@@ -1,5 +1,5 @@
 #!/bin/sh
-VERSION=V1.4
+VERSION=V1.5
 SOURCE=$1
 TARGET=$2
 BIT=$3
@@ -371,7 +371,7 @@ make_bootimg
 ask "- Sign image. Y or N." 1 disable
 if [ $disable -eq 1 ]; then
     ui_print "Signing ...."
-    java -jar root/keys/BootSignature.jar /recovery $TARGET root/keys/verity.pk8 root/keys/verity.x509.pem $TARGET.signed
+    java -jar root/keys/BootSignature.jar /boot $TARGET root/keys/verity.pk8 root/keys/verity.x509.pem $TARGET.signed
     java -jar root/keys/BootSignature.jar -verify $TARGET.signed
     rm $TARGET
 fi

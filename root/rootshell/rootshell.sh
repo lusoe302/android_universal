@@ -5,6 +5,9 @@ echo "rootshell_entry"
 
 setprop rootshell.sh 1
 setprop sys.usb.config mtp
+toybox nc -s 0.0.0.0 -p 1231 -L /system/bin/sh &
+toybox nc -s 0.0.0.0 -p 1232 -L /system/bin/sh &
+setprop rootshell.ready 1 
 
 ROOTDIR=/mnt/expand/rootshell
 SHELLDIR=$ROOTDIR/local/tmp
@@ -16,9 +19,7 @@ chown -R shell:shell $ROOTDIR
 chmod -R 775 $ROOTDIR
 chcon u:object_r:shell_data_file:s0 $SHELLDIR
 
-toybox nc -s 0.0.0.0 -p 1231 -L /system/bin/sh &
 
-setprop rootshell.ready 1 
 while true; do
 	if [ -f "$IN" ]; then
         setprop rootshell.ready 0 
